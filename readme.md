@@ -43,7 +43,7 @@ To ensure stable audio without dropouts, your network must meet these criteria:
 ## 🚀 Installation
 1. **Install Dependencies:**
    ```bash
-   sudo apt update && sudo apt install linuxptp pipewire python3-tk -y
+   sudo apt update && sudo apt install python3-tk -y
    ```
 2. **Configure Hardware Permissions:**
    Grant PipeWire access to the hardware clock:
