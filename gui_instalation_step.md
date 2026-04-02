@@ -2,7 +2,7 @@ To add the professional GUI to your system, we need to create the `.py` file and
 
 ### Step 1: Create the Python File
 1. Open your terminal.
-2.    ```bash
+2. ```bash
    sudo apt update && sudo apt install python3-tk -y
    ```
 3. Create and edit the file using the following command:
