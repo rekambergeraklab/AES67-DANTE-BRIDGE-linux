@@ -52,7 +52,7 @@ To ensure stable audio without dropouts, your network must meet these criteria:
    sudo udevadm control --reload-rules && sudo udevadm trigger
    ```
 3. **Run the Setup Script:**
-   Use the provided `install_aes67_ondemand.sh` to generate the PipeWire configuration and the Desktop Shortcut.
+   Use the provided `install_AES67_Dante.sh` to generate the PipeWire configuration and the Desktop Shortcut.
 
 ---
 
