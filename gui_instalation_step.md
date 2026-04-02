@@ -2,12 +2,15 @@ To add the professional GUI to your system, we need to create the `.py` file and
 
 ### Step 1: Create the Python File
 1. Open your terminal.
-2. Create and edit the file using the following command:
+2.    ```bash
+   sudo apt update && sudo apt install python3-tk -y
+   ```
+3. Create and edit the file using the following command:
    ```bash
    nano ~/aes67_gui.py
    ```
-3. Paste the **entire Python code** we developed (the one with the Slogan, Credit, and Language options) into the editor.
-4. Save and exit (Press `Ctrl+O`, then `Enter`, then `Ctrl+X`).
+4. Paste the **entire Python code** we developed (the one with the Slogan, Credit, and Language options) into the editor.
+5. Save and exit (Press `Ctrl+O`, then `Enter`, then `Ctrl+X`).
 
 ---
 
