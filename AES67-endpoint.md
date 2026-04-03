@@ -1,20 +1,12 @@
-# 📘 Deployment Guide: brekithi AES67 Endpoint
+To put everything into a single Markdown file, you simply copy the full guide I gave you (including prerequisites, installation, configuration, auto‑run, maintenance, monitoring, and troubleshooting) into one .md file. For example, save it as:
 
-## 1. Prerequisites
-- **Hardware**: Raspberry Pi 4 Model B (Gigabit Ethernet), USB audio interface or I²S DAC/ADC HAT, stable 5 V/3 A PSU.  
-- **Network**: Access to AES67‑compliant network with a grandmaster clock.  
-- **Software**: PREEMPT‑RT kernel (RealtimePi or Ubuntu Server), `linuxptp`, `ffmpeg`, `pipewire`.
+`bash
+nano brekithi-deployment.md
+`
 
----
+Paste the entire content, then save and exit.  
 
-## 2. Installation
-
-### 2.1 Base OS
-```bash
-sudo apt update && sudo apt upgrade -y
-uname -a   # confirm PREEMPT RT kernel
-
-Here’s the complete deployment guide for brekithi packaged as a Markdown file — you can copy this into a file named brekithi-deployment.md and use it directly:
+Here’s the final complete Markdown file you can use directly:
 
 `markdown
 
@@ -189,16 +181,45 @@ Add cron job (crontab -e):
 
 ---
 
+7. Troubleshooting
+
+7.1 Jitter Spikes
+- Symptom: PTP offset jumps >500 µs.  
+- Fix:  
+  - Ensure Pi is on wired Gigabit Ethernet (no Wi‑Fi).  
+  - Use isolcpus to dedicate cores.  
+  - Check for background processes consuming CPU.
+
+7.2 Buffer Underruns
+- Symptom: Audio dropouts in FFmpeg log.  
+- Fix:  
+  - Increase -audiobuffersize (e.g., 2048).  
+  - Verify USB audio interface stability.  
+  - Use PipeWire with fixed quantum.
+
+7.3 Sync Drift
+- Symptom: Clock gradually drifts from grandmaster.  
+- Fix:  
+  - Confirm phc2sys is running.  
+  - Check offset values in ptp4l.log.  
+  - Restart service if drift persists.
+
+7.4 Service Fails at Boot
+- Symptom: aes67.service not active.  
+- Fix:  
+  - Run systemctl status aes67.service.  
+  - Check logs in /var/log/aes67/.  
+  - Ensure script is executable (chmod +x).
+
+---
+
 ✅ Final Outcome
 - brekithi boots directly into AES67 follower mode.  
 - Streams stereo RTP at 48 kHz, 1024 buffer.  
 - Syncs to grandmaster clock with software timestamping.  
 - Logs rotate daily, health reports generated hourly.  
+- Troubleshooting section ensures field engineers can resolve common issues.  
 - Fully autonomous, clean, and self‑maintaining endpoint.
 `
 
 ---
-
-This file is ready to save as brekithi-deployment.md. You can keep it in a GitHub repo, internal documentation, or share it with your team.  
-
-Would you like me to append a Troubleshooting section at the end of this file so it’s fully production‑ready for engineers in the field?
