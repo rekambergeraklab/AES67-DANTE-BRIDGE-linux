@@ -1,13 +1,3 @@
-To put everything into a single Markdown file, you simply copy the full guide I gave you (including prerequisites, installation, configuration, auto‑run, maintenance, monitoring, and troubleshooting) into one .md file. For example, save it as:
-
-`bash
-nano brekithi-deployment.md
-`
-
-Paste the entire content, then save and exit.  
-
-Here’s the final complete Markdown file you can use directly:
-
 `markdown
 
 📘 Deployment Guide: brekithi AES67 Endpoint
