@@ -3,6 +3,7 @@
 # ==============================================================================
 # Linux AES67 (Dante) PipeWire Installer - ON-DEMAND VERSION
 # Target: eno1 Hardware PTP | 8 Channel TX/RX (AUX 1-8) | 1ms Packet Time
+# SAP (RX & TX) ENABLED
 # ==============================================================================
 
 if [ "$EUID" -ne 0 ]; then
@@ -60,7 +61,7 @@ PW_FILE="$PW_DIR/aes67-8ch.conf"
 
 sudo -u $REAL_USER mkdir -p $PW_DIR
 
-cat << 'EOF' > $PW_FILE
+cat << EOF > $PW_FILE
 # --- CORE ENGINE REQUIREMENTS ---
 # These are mandatory to connect to your existing desktop audio session
 context.spa-libs = {
@@ -81,7 +82,8 @@ context.modules = [
         }
     }
 
-    # --- 8-CHANNEL AES67 TRANSMITTER (TX) ---
+    # --- 8-CHANNEL AES67 TRANSMITTER (TX & SAP ANNOUNCE) ---
+    # This transmitter is now SAP-advertised (auto-discoverable in Dante Controller etc)
     { name = libpipewire-module-rtp-sink
         args = {
             local.ifname = "eno1"
@@ -92,6 +94,11 @@ context.modules = [
             rtp.ptime = 1
             node.name = "AES67_TX_8ch"
             node.description = "AES67 Transmit (Channels 1-8)"
+            # SAP announcement - ENABLE TX stream auto-discovery
+            sap.enabled = true
+            sap.ip = "239.255.255.255"
+            sap.port = 9875
+            sess.name = "AES67 TX from $REAL_USER"
         }
     }
 ]
