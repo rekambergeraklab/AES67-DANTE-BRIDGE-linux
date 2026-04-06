@@ -2,7 +2,8 @@
 
 # ==============================================================================
 # Linux AES67 (Dante) PipeWire Installer - ON-DEMAND VERSION
-# Target: enp3s0 Software PTP | 8 Channel TX/RX (AUX 1-8) | 1ms Packet Time
+# Target: eno1 Hardware PTP | 8 Channel TX/RX (AUX 1-8) | 1ms Packet Time
+# SAP (RX & TX) ENABLED
 # ==============================================================================
 
 if [ "$EUID" -ne 0 ]; then
@@ -24,31 +25,31 @@ echo "⏳ Step 1: Installing tools and disabling conflicting time services..."
 apt-get update -yqq
 apt-get install -yqq linuxptp
 
-# Disable NTP/Timesyncd so it doesn't fight our PTP clock
+# Disable NTP/Timesyncd so it doesn't fight our PTP hardware clock
 systemctl stop systemd-timesyncd 2>/dev/null
 systemctl disable systemd-timesyncd 2>/dev/null
 
 # Make sure old background services are dead (if you ran the previous script)
-systemctl stop ptp4l-enp3s0 phc2sys-enp3s0 2>/dev/null
-systemctl disable ptp4l-enp3s0 phc2sys-enp3s0 2>/dev/null
+systemctl stop ptp4l-eno1 phc2sys-eno1 2>/dev/null
+systemctl disable ptp4l-eno1 phc2sys-eno1 2>/dev/null
 
 echo "✅ Step 1 Complete: System is ready for manual clocking."
 
 # ==============================================================================
 # STEP 2: PERMISSION SETUP (Permanent Udev Rules)
 # ==============================================================================
-echo "⏳ Step 2: Granting PipeWire permanent access to enp3s0 clocks..."
+echo "⏳ Step 2: Granting PipeWire permanent access to eno1 hardware clocks..."
 
 usermod -aG audio $REAL_USER
 
-cat << 'EOF' > /etc/udev/rules.d/99-ptp-enp3s0.rules
-SUBSYSTEM=="ptp", ATTR{clock_name}=="enp3s0", GROUP="audio", MODE="0660"
+cat << 'EOF' > /etc/udev/rules.d/99-ptp-eno1.rules
+SUBSYSTEM=="ptp", ATTR{clock_name}=="eno1", GROUP="audio", MODE="0660"
 EOF
 
 udevadm control --reload-rules
 udevadm trigger
 
-echo "✅ Step 2 Complete: Clock permissions secured."
+echo "✅ Step 2 Complete: Hardware clock permissions secured."
 
 # ==============================================================================
 # STEP 3: AES67 8-CHANNEL CONFIGURATION (Fixed Protocols & SAP Discovery)
@@ -60,7 +61,7 @@ PW_FILE="$PW_DIR/aes67-8ch.conf"
 
 sudo -u $REAL_USER mkdir -p $PW_DIR
 
-cat << 'EOF' > $PW_FILE
+cat << EOF > $PW_FILE
 # --- CORE ENGINE REQUIREMENTS ---
 # These are mandatory to connect to your existing desktop audio session
 context.spa-libs = {
@@ -77,14 +78,15 @@ context.modules = [
     # Automatically discovers Dante streams on the network and creates nodes for them
     { name = libpipewire-module-rtp-sap
         args = {
-            local.ifname = "enp3s0"
+            local.ifname = "eno1"
         }
     }
 
-    # --- 8-CHANNEL AES67 TRANSMITTER (TX) ---
+    # --- 8-CHANNEL AES67 TRANSMITTER (TX & SAP ANNOUNCE) ---
+    # This transmitter is now SAP-advertised (auto-discoverable in Dante Controller etc)
     { name = libpipewire-module-rtp-sink
         args = {
-            local.ifname = "enp3s0"
+            local.ifname = "eno1"
             sess.media = "audio"
             audio.rate = 48000
             audio.channels = 8
@@ -92,6 +94,11 @@ context.modules = [
             rtp.ptime = 1
             node.name = "AES67_TX_8ch"
             node.description = "AES67 Transmit (Channels 1-8)"
+            # SAP announcement - ENABLE TX stream auto-discovery
+            sap.enabled = true
+            sap.ip = "239.255.255.255"
+            sap.port = 9875
+            sess.name = "AES67 TX from $REAL_USER"
         }
     }
 ]
@@ -119,14 +126,13 @@ echo "========================================="
 echo " 🎛️  STARTING AES67 / DANTE SESSION"
 echo "========================================="
 
-echo "⏳ Locking enp3s0 to the network grandmaster (Software PTP)..."
-# Changed to -S (Software Timestamping) and -s (Slave only)
-ptp4l -i enp3s0 -S -s -q &
+echo "⏳ Locking eno1 to the network grandmaster..."
+ptp4l -i eno1 -H -S -q &
 PTP_PID=\$!
 sleep 2
 
-echo "⏳ Syncing Ubuntu system clock to enp3s0..."
-phc2sys -s enp3s0 -c CLOCK_REALTIME -w -q &
+echo "⏳ Syncing Ubuntu system clock to eno1..."
+phc2sys -s eno1 -c CLOCK_REALTIME -w -q &
 PHC_PID=\$!
 sleep 3
 
