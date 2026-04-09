@@ -1,7 +1,3 @@
-Here is the complete, compiled documentation from start to finish. I have merged everything into a single, comprehensive guide that takes you from a blank Linux machine to a fully synchronized AES67 PTP environment, including the secret to rigging the Grandmaster election.
-
-You can save this directly as your `README.md`.
-
 ***
 
 # The Complete AES67 PTP Clock Architecture Guide
