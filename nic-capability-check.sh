@@ -1,5 +1,6 @@
+bash
 
-#!/bin/bash
+
 for nic in $(ls /sys/class/net | grep enp); do
     echo "------------------------------------------------"
     echo "AUDIT FOR INTERFACE: $nic"
