@@ -16,7 +16,7 @@ A professional-grade Linux audio bridge that connects **Ubuntu 24.04** to a **Da
 3. [Installation](#-installation)
 4. [Operation Manual](#-operation-manual)
 5. [Troubleshooting](#-troubleshooting)
-
+/home/rblab/.rustup/toolchains/stable-x86\_64-unknown-linux-gnu/bin/rust-analyzer --version
 ---
 
 ## ⚡ Prerequisites
